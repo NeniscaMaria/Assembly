@@ -1,0 +1,1 @@
+Numarul aparitiilor caracterului a citit nu este egal cu numarul 4 citit.

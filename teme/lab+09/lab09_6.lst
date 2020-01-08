@@ -1,0 +1,116 @@
+     1                                  bits 32 ; assembling for the 32 bits architecture
+     2                                  
+     3                                  ; declare the EntryPoint (a label defining the very first instruction of the program)
+     4                                  global start        
+     5                                  
+     6                                  ; declare external functions needed by our program
+     7                                  extern exit,printf,scanf              ; tell nasm that exit exists even if we won't be defining it
+     8                                  ;extern concatenare
+     9                                  import exit msvcrt.dll    ; exit is a function that ends the calling process. It is defined in msvcrt.dll
+    10                                                            ; msvcrt.dll contains exit, printf and all the other important C-runtime specific functions
+    11                                  import printf msvcrt.dll
+    12                                  import scanf msvcrt.dll
+    13                                  
+    14                                  ; our data is declared here (the variables needed by our program)
+    15                                  segment data use32 class=data
+    16 00000000 257300                      format db '%s',0
+    17 00000003 496E73657274206120-         message db 'Insert a word:',0
+    17 0000000C 776F72643A00       
+    18 00000012 54686520726573756C-         message2 db 'The result is: %s',0
+    18 0000001B 742069733A20257300 
+    19 00000024 00<rept>                    s1 times 10 db 0
+    20 0000002E 0A000000                    lens1 dd 10
+    21 00000032 00<rept>                    s2 times 10 db 0
+    22 0000003C 0A000000                    lens2 dd 10
+    23 00000040 00<rept>                    s3 times 10 db 0
+    24 0000004A 0A000000                    lens3 dd 10
+    25 0000004E 00<rept>                    s4 times 30 db 0
+    26 0000006C 1E000000                    lens4 dd 30
+    27                                      
+    28                                      
+    29                                  ; our code starts here
+    30                                  segment code use32 class=code
+    31                                      start:
+    32                                          ; Se citesc trei siruri de caractere. Sa se determine si sa se afiseze rezultatul concatenarii lor.
+    33                                          ; we suppose that a word is not longer than 10 characters
+    34 00000000 68[03000000]                    push dword message 
+    35 00000005 FF15[00000000]                  call [printf]
+    36 0000000B 83C404                          add ESP,4
+    37                                              
+    38 0000000E 68[24000000]                    push dword s1
+    39 00000013 68[00000000]                    push dword format
+    40 00000018 FF15[00000000]                  call [scanf] 
+    41 0000001E 83C408                          add ESP,4*2  
+    42                                  
+    43 00000021 68[03000000]                    push dword message 
+    44 00000026 FF15[00000000]                  call [printf]
+    45 0000002C 83C404                          add ESP,4
+    46                                              
+    47 0000002F 68[32000000]                    push dword s2
+    48 00000034 68[00000000]                    push dword format
+    49 00000039 FF15[00000000]                  call [scanf] 
+    50 0000003F 83C408                          add ESP,4*2 
+    51                                          
+    52 00000042 68[03000000]                    push dword message 
+    53 00000047 FF15[00000000]                  call [printf]
+    54 0000004D 83C404                          add ESP,4
+    55                                              
+    56 00000050 68[40000000]                    push dword s3
+    57 00000055 68[00000000]                    push dword format
+    58 0000005A FF15[00000000]                  call [scanf] 
+    59 00000060 83C408                          add ESP,4*2         
+    60                                              
+    61 00000063 68[2E000000]                    push dword lens1
+    62 00000068 68[3C000000]                    push dword lens2
+    63 0000006D 68[4A000000]                    push dword lens3
+    64 00000072 68[6C000000]                    push dword lens4
+    65 00000077 68[4E000000]                    push dword s4
+    66 0000007C 68[40000000]                    push dword s3
+    67 00000081 68[32000000]                    push dword s2
+    68 00000086 68[24000000]                    push dword s1
+    69                                          ;call concatenare
+    70                                          ;first we copy s1 in s4
+    71 0000008B FC                              cld
+    72 0000008C 8B3424                          mov ESI,[ESP] ;the offset of the source string(s1)
+    73 0000008F 8B7C240C                        mov EDI,[ESP+12] ;the offset of the destination string(s4)
+    74 00000093 B90A000000                      mov ECX,10 
+    75                                          repeat1:
+    76 00000098 AC                                  lodsb
+    77 00000099 3C00                                cmp AL,0
+    78 0000009B 7403                                je next1
+    79 0000009D AA                                  stosb
+    80 0000009E E2F8                                loop repeat1
+    81                                          next1:
+    82                                          ;then copy s2 at the end of s4
+    83 000000A0 FC                              cld
+    84 000000A1 8B742404                        mov ESI,[ESP+4]
+    85                                                          ;EDI already contains the offset of the destination string
+    86 000000A5 B90A000000                      mov ECX,10
+    87                                          repeat2:
+    88 000000AA AC                                  lodsb
+    89 000000AB 3C00                                cmp AL,0
+    90 000000AD 7403                                je next2
+    91 000000AF AA                                  stosb
+    92 000000B0 E2F8                                loop repeat2
+    93                                          next2:
+    94                                          ;now copy s3 at the end of s4
+    95 000000B2 FC                              cld
+    96 000000B3 8B742408                        mov ESI,[ESP+8]
+    97                                                          ;EDI already contains the offset of the destination string
+    98 000000B7 B90A000000                      mov ECX,10
+    99                                          repeat3:
+   100 000000BC AC                                  lodsb
+   101 000000BD 3C00                                cmp AL,0
+   102 000000BF 7403                                je next3
+   103 000000C1 AA                                  stosb
+   104 000000C2 E2F8                                loop repeat3
+   105                                          next3:
+   106 000000C4 83C410                          add ESP,4*4
+   107                                              
+   108 000000C7 68[4E000000]                    push dword s4
+   109 000000CC 68[12000000]                    push dword message2
+   110 000000D1 FF15[00000000]                  call [printf]
+   111 000000D7 83C408                          add ESP,4*2        
+   112                                          ; exit(0)
+   113 000000DA 6A00                            push    dword 0      ; push the parameter for exit onto the stack
+   114 000000DC FF15[00000000]                  call    [exit]       ; call exit to terminate the program

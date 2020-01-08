@@ -1,0 +1,50 @@
+     1                                  bits 32 ; assembling for the 32 bits architecture
+     2                                  
+     3                                  ; declare the EntryPoint (a label defining the very first instruction of the program)
+     4                                  global start        
+     5                                  
+     6                                  ; declare external functions needed by our program
+     7                                  extern exit               ; tell nasm that exit exists even if we won't be defining it
+     8                                  import exit msvcrt.dll    ; exit is a function that ends the calling process. It is defined in msvcrt.dll
+     9                                                            ; msvcrt.dll contains exit, printf and all the other important C-runtime specific functions
+    10                                  
+    11                                  ; our data is declared here (the variables needed by our program)
+    12                                  segment data use32 class=data
+    13 00000000 EEBF5777                    a dd 01110111010101111011111111101110b; 7757BFEEh
+    14 00000004 00000000                    b dd 0
+    15 00000008 00000000                    d dd 0
+    16 0000000C 00                          c db 0
+    17 0000000D 00000000                    x dd 0; aici va fi numarul intreg reprezentat pe bitii 14-17 ai lui A
+    18                                  ; our code starts here
+    19                                  segment code use32 class=code
+    20                                      start:
+    21                                          ;Se da dublucuvantul A. Sa se obtina numarul intreg n reprezentat de bitii 14-17 ai lui A. Sa se obtina apoi in B dublucuvantul rezultat prin rotirea spre stanga a lui A cu n pozitii. Sa se obtina apoi octet
+    22                                              ;bitii 0-5 ai lui C coincid cu bitii 1-6 ai lui B
+    23                                              ;bitii 6-7 ai lui C coincid cu bitii 17-18 ai lui B
+    24 00000000 A1[00000000]                mov EAX,[a]; izolam bitii 14-17
+    25 00000005 2500C00300                  and EAX, 00000000000000111100000000000000b
+    26 0000000A B10E                        mov Cl,14
+    27 0000000C D3C8                        ror EAX, CL; deplasam la dreapta cu 14 pozitii
+    28 0000000E A3[0D000000]                mov DWORD[x],EAX; mutam rezultatul in variabila
+    29 00000013 A1[00000000]                mov EAX,[a]; vom roti spre stanga cuvantul cu n pozitii(n=numarul intreg reprezentat in x)
+    30 00000018 8A0D[0D000000]              mov CL, [x]
+    31 0000001E D3C0                        rol EAX,CL
+    32 00000020 A3[04000000]                mov DWORD[b],EAX; punem rezultatul in variabila b
+    33 00000025 BB00000000                  mov EBX,0; aici vom calcula rezultatul de la ultima operatie
+    34 0000002A A1[04000000]                mov EAX,[b]; izolam bitii 1-6 din b
+    35 0000002F 83E07E                      and EAX, 00000000000000000000000001111110b
+    36 00000032 B101                        mov CL,1
+    37 00000034 D3C8                        ror EAX,CL; deplasam la stanga cu 1 pozitie
+    38 00000036 09C3                        or EBX,EAX; punem bitii in rezultat
+    39 00000038 A1[04000000]                mov EAX,[b]; vom izola bitii 17-18 din b
+    40 0000003D 2500000600                  and EAX, 00000000000001100000000000000000b
+    41 00000042 B10B                        mov CL, 11
+    42 00000044 D3C8                        ror EAX,CL; deplasam cu 11 pozitii bitii
+    43 00000046 09C3                        or EBX,EAX;punem bitii in rezultat
+    44 00000048 891D[08000000]              mov DWORD[d],EBX; vom lua daor ultimii 8 biti din acest rezultat
+    45 0000004E 8A1D[08000000]              mov BL,[d]
+    46 00000054 881D[0C000000]              mov BYTE[c],BL; punem rezultatul in variabila
+    47                                      
+    48                                          
+    49 0000005A 6A00                            push    dword 0      ; push the parameter for exit onto the stack
+    50 0000005C FF15[00000000]                  call    [exit]       ; call exit to terminate the program

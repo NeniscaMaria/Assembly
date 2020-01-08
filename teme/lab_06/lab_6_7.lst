@@ -1,0 +1,52 @@
+     1                                  bits 32 ; assembling for the 32 bits architecture
+     2                                  
+     3                                  ; declare the EntryPoint (a label defining the very first instruction of the program)
+     4                                  global start        
+     5                                  
+     6                                  ; declare external functions needed by our program
+     7                                  extern exit               ; tell nasm that exit exists even if we won't be defining it
+     8                                  import exit msvcrt.dll    ; exit is a function that ends the calling process. It is defined in msvcrt.dll
+     9                                                            ; msvcrt.dll contains exit, printf and all the other important C-runtime specific functions
+    10                                  
+    11                                  ; our data is declared here (the variables needed by our program)
+    12                                  segment data use32 class=data
+    13 00000000 785634124D3C2B1A76-         s DD 12345678h, 1A2B3C4Dh, 2398DC76h
+    13 00000009 DC9823             
+    14                                      lens EQU $-s
+    15 0000000C 00<rept>                    d times lens db 0
+    16 00000018 03                          trei db 3;used when checking if a number is a multiple of 3
+    17                                      
+    18                                  
+    19                                  ; our code starts here
+    20                                  segment code use32 class=code
+    21                                      start:
+    22                                      ; Se da un sir de dublucuvinte. Sa se obtina sirul format din octetii superiori ai 
+    23                                      ;cuvitelor superioare din elementele sirului de dublucuvinte care sunt divizibili cu 3.
+    24                                      ;Exemplu:
+    25                                      ;Se da sirul de dublucuvinte:
+    26                                      ;s DD 12345678h, 1A2B3C4Dh, FE98DC76h
+    27                                      ;Sa se obtina sirul
+    28                                      ;d DB 12h.
+    29 00000000 BE[00000000]                    mov esi,s
+    30 00000005 BF[0C000000]                    mov edi,d
+    31 0000000A B903000000                      mov ecx,lens/4
+    32 0000000F FC                              cld
+    33                                          repeat:    
+    34 00000010 66AD                                lodsw;mov AX,[esi] and inc esi// in AX we have the low word of the current doubleword
+    35 00000012 66AD                                lodsw;mov AX,[esi] and inc esi// in AX we have the high word of the current doubleword 
+    36 00000014 66C1E808                            shr AX,8; we want to obtain only the high bytes of AX (only the first 2 bytes)
+    37 00000018 B400                                mov AH,0 ; we are interesting only in the least significant part from AX (in AL we have the high bytes from the 
+    38                                                        ;current double word from s
+    39 0000001A F635[18000000]                      div BYTE[trei]; we check if it is a multiple of 3
+    40 00000020 80FC00                              cmp AH,0; if the remainder is 0, we will continue the cicle
+    41 00000023 7509                                jnz next
+    42 00000025 F625[18000000]                      mul BYTE[trei]
+    43 0000002B AA                                  stosb ;mov[edi],al +inc edi
+    44 0000002C E2E2                                loop repeat
+    45                                          next:
+    46 0000002E E2E0                                loop repeat
+    47                                              
+    48                                              
+    49                                          ; exit(0)
+    50 00000030 6A00                            push    dword 0      ; push the parameter for exit onto the stack
+    51 00000032 FF15[00000000]                  call    [exit]       ; call exit to terminate the program

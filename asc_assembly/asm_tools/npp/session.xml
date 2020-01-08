@@ -1,0 +1,9 @@
+<NotepadPlus>
+    <Session activeView="0">
+        <mainView activeIndex="1">
+            <File firstVisibleLine="29" xOffset="0" scrollWidth="880" startPos="1724" endPos="1724" selMode="0" lang="Assembly" encoding="-1" filename="D:\Desktop\Facultate\asc\teme\lab03\tema_lab_2_inmultiri_2.asm" backupFilePath="D:\Desktop\Facultate\asc\asc_assembly\asm_tools\npp\backup\tema_lab_2_inmultiri_2.asm@2018-10-29_175115" originalFileLastModifTimestamp="1540827547" mapFirstVisibleDisplayLine="-1" mapFirstVisibleDocLine="-1" mapLastVisibleDocLine="-1" mapNbLine="-1" mapHigherPos="-1" mapWidth="-1" mapHeight="-1" mapKByteInDoc="3014698" mapWrapIndentMode="-1" mapIsWrap="no" />
+            <File firstVisibleLine="16" xOffset="0" scrollWidth="880" startPos="1174" endPos="1174" selMode="0" lang="Assembly" encoding="-1" filename="D:\Desktop\Facultate\asc\teme\lab03\tema_lab_2_inmultiri_1.asm" backupFilePath="" originalFileLastModifTimestamp="1540828269" mapFirstVisibleDisplayLine="-1" mapFirstVisibleDocLine="-1" mapLastVisibleDocLine="-1" mapNbLine="-1" mapHigherPos="-1" mapWidth="-1" mapHeight="-1" mapKByteInDoc="108917920" mapWrapIndentMode="-1" mapIsWrap="no" />
+        </mainView>
+        <subView activeIndex="0" />
+    </Session>
+</NotepadPlus>

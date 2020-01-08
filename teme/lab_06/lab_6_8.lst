@@ -1,0 +1,74 @@
+     1                                  bits 32 ; assembling for the 32 bits architecture
+     2                                  
+     3                                  ; declare the EntryPoint (a label defining the very first instruction of the program)
+     4                                  global start        
+     5                                  
+     6                                  ; declare external functions needed by our program
+     7                                  extern exit               ; tell nasm that exit exists even if we won't be defining it
+     8                                  import exit msvcrt.dll    ; exit is a function that ends the calling process. It is defined in msvcrt.dll
+     9                                                            ; msvcrt.dll contains exit, printf and all the other important C-runtime specific functions
+    10                                  
+    11                                  ; our data is declared here (the variables needed by our program)
+    12                                  segment data use32 class=data
+    13 00000000 9100EAFFD0FF7F00            s dw 0000000010010001b, 1111111111101010b, 1111111111010000b, 0000000001111111b
+    14                                      lens equ $-s 
+    15 00000008 00<rept>                    d times lens db 0
+    16                                      max equ 16
+    17                                      unu equ 1
+    18                                      
+    19                                  ; our code starts here
+    20                                  segment code use32 class=code
+    21                                      start:
+    22                                      ;A word string s is given. Build the byte string d such that each element d[i] contains:
+    23                                      ;- the count of zeros in the word s[i], if s[i] is a negative number
+    24                                      ;- the count of ones in the word s[i], if s[i] is a positive number
+    25                                      ;Example:
+    26                                      ;s:145,-22, -48, 127
+    27                                      ;in binary:
+    28                                      ;10010001, 1111111111101010, 1111111111010000, 1111111
+    29                                      ;d: 3, 3, 5, 7
+    30                                          
+    31 00000000 BE[00000000]                    mov ESI,s
+    32 00000005 BF[08000000]                    mov EDI,d
+    33 0000000A B900000000                      mov ECX,0
+    34 0000000F FC                              cld
+    35                                          repeat:
+    36 00000010 66AD                                lodsw ; mov AX,[esi] and inc esi
+    37 00000012 6683F800                            cmp AX,0
+    38 00000016 B300                                mov BL,0
+    39 00000018 B200                                mov DL,0
+    40 0000001A F9                                  stc
+    41 0000001B 7C02                                jl negative
+    42 0000001D 7F20                                jg positive
+    43                                          negative:
+    44 0000001F 66D1D8                              rcr AX,unu
+    45 00000022 7309                                jnc add1
+    46 00000024 FEC2                                inc DL
+    47 00000026 80FA10                              cmp DL,max
+    48 00000029 72F4                                jb negative 
+    49 0000002B 7420                                je continue
+    50                                          add1:
+    51 0000002D FEC3                                inc BL
+    52 0000002F FEC2                                inc DL
+    53 00000031 80FA10                              cmp DL,max
+    54 00000034 72E9                                jb negative
+    55                                          add2:
+    56 00000036 FEC3                                inc BL
+    57 00000038 FEC2                                inc DL
+    58 0000003A 80FA10                              cmp DL,max
+    59 0000003D 7200                                jb positive
+    60                                          positive:
+    61 0000003F 66D1D8                              rcr AX,unu
+    62 00000042 72F2                                jc add2
+    63 00000044 FEC2                                inc DL
+    64 00000046 80FA10                              cmp DL,max
+    65 00000049 72F4                                jb positive 
+    66 0000004B 7400                                je continue
+    67                                          continue:
+    68 0000004D 88D8                                mov AL,BL
+    69 0000004F AA                                  stosb ; mov[edi],al and inc edi
+    70 00000050 41                                  inc ECX
+    71 00000051 83F904                              cmp ECX,lens/2
+    72 00000054 72BA                                jb repeat
+    73 00000056 6A00                            push    dword 0      ; push the parameter for exit onto the stack
+    74 00000058 FF15[00000000]                  call    [exit]       ; call exit to terminate the program

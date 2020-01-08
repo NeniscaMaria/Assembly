@@ -1,0 +1,152 @@
+     1                                  bits 32 ; assembling for the 32 bits architecture
+     2                                  
+     3                                  ; declare the EntryPoint (a label defining the very first instruction of the program)
+     4                                  global start        
+     5                                  
+     6                                  ; declare external functions needed by our program
+     7                                  extern exit,printf,scanf,fopen,fclose,fscanf     
+     8                                  import exit msvcrt.dll   
+     9                                  import printf msvcrt.dll
+    10                                  import scanf msvcrt.dll   
+    11                                  import fopen msvcrt.dll 
+    12                                  import fclose msvcrt.dll    
+    13                                  import fscanf msvcrt.dll            
+    14                                  segment data use32 class=data
+    15 00000000 6173632E7478740000-         filename dd 'asc.txt',0
+    15 00000009 000000             
+    16 0000000C 7200000000000000            modread dd 'r',0
+    17 00000014 2573200000000000            readformat dd '%s ',0
+    18 0000001C 00000000<rept>              cuv1 times 10 dd 0
+    19 00000044 00000000<rept>              cuv2 times 10 dd 0
+    20 0000006C 00000000<rept>              cuv3 times 10 dd 0
+    21 00000094 00000000<rept>              cuv4 times 10 dd 0
+    22 000000BC 00000000<rept>              cuv5 times 10 dd 0
+    23 000000E4 FFFFFFFF                    handle1 dd -1
+    24                                  ; our code starts here
+    25                                  segment code use32 class=code
+    26                                      start:
+    27                                      ; here we open the file for writing/appending
+    28 00000000 68[0C000000]                    push dword modread
+    29 00000005 68[00000000]                    push dword filename
+    30 0000000A FF15[00000000]                  call [fopen]
+    31 00000010 83C408                          add esp,4*2
+    32 00000013 A3[E4000000]                    mov [handle1],EAX
+    33 00000018 83F800                          cmp EAX,0
+    34 0000001B 0F8459010000                    je final
+    35                                          
+    36 00000021 68[1C000000]                    push dword cuv1
+    37 00000026 68[14000000]                    push dword readformat
+    38 0000002B FF35[E4000000]                  push dword [handle1]
+    39 00000031 FF15[00000000]                  call [fscanf]
+    40 00000037 83C40C                          add esp, 4*3
+    41                                          
+    42 0000003A 68[44000000]                    push dword cuv2
+    43 0000003F 68[14000000]                    push dword readformat
+    44 00000044 FF35[E4000000]                  push dword [handle1]
+    45 0000004A FF15[00000000]                  call [fscanf]
+    46 00000050 83C40C                          add esp, 4*3
+    47                                          
+    48 00000053 68[6C000000]                    push dword cuv3
+    49 00000058 68[14000000]                    push dword readformat
+    50 0000005D FF35[E4000000]                  push dword [handle1]
+    51 00000063 FF15[00000000]                  call [fscanf]
+    52 00000069 83C40C                          add esp, 4*3
+    53                                          
+    54 0000006C 68[94000000]                    push dword cuv4
+    55 00000071 68[14000000]                    push dword readformat
+    56 00000076 FF35[E4000000]                  push dword [handle1]
+    57 0000007C FF15[00000000]                  call [fscanf]
+    58 00000082 83C40C                          add esp, 4*3
+    59                                          
+    60 00000085 68[BC000000]                    push dword cuv5
+    61 0000008A 68[14000000]                    push dword readformat
+    62 0000008F FF35[E4000000]                  push dword [handle1]
+    63 00000095 FF15[00000000]                  call [fscanf]
+    64 0000009B 83C40C                          add esp, 4*3
+    65                                          
+    66 0000009E BE[1C000000]                    mov ESI,cuv1 ;offset of source string
+    67 000000A3 BF[1C000000]                    mov EDI,cuv1 ;offset of destination string
+    68 000000A8 B90A000000                      mov ECX,10
+    69                                          repeat1:
+    70 000000AD AC                                  lodsb
+    71 000000AE 3C00                                cmp AL,0
+    72 000000B0 7405                                je next1
+    73 000000B2 2C02                                sub AL,2
+    74 000000B4 AA                                  stosb
+    75 000000B5 E2F6                                loop repeat1
+    76                                          next1:
+    77 000000B7 BE[44000000]                    mov ESI,cuv2 ;offset of source string
+    78 000000BC BF[44000000]                    mov EDI,cuv2 ;offset of destination string
+    79 000000C1 B90A000000                      mov ECX,10
+    80                                          repeat2:
+    81 000000C6 AC                                  lodsb
+    82 000000C7 3C00                                cmp AL,0
+    83 000000C9 7405                                je next2
+    84 000000CB 2C02                                sub AL,2
+    85 000000CD AA                                  stosb
+    86 000000CE E2F6                                loop repeat2
+    87                                          next2:
+    88 000000D0 BE[6C000000]                    mov ESI,cuv3 ;offset of source string
+    89 000000D5 BF[6C000000]                    mov EDI,cuv3 ;offset of destination string
+    90 000000DA B90A000000                      mov ECX,10
+    91                                          repeat3:
+    92 000000DF AC                                  lodsb
+    93 000000E0 3C00                                cmp AL,0
+    94 000000E2 7405                                je next3
+    95 000000E4 2C02                                sub Al,2
+    96 000000E6 AA                                  stosb
+    97 000000E7 E2F6                                loop repeat3
+    98                                          next3:
+    99 000000E9 BE[94000000]                    mov ESI,cuv4 ;offset of source string
+   100 000000EE BF[94000000]                    mov EDI,cuv4 ;offset of destination string
+   101 000000F3 B90A000000                      mov ECX,10
+   102                                          repeat4:
+   103 000000F8 AC                                  lodsb
+   104 000000F9 3C00                                cmp AL,0
+   105 000000FB 7405                                je next4
+   106 000000FD 2C02                                sub AL,2
+   107 000000FF AA                                  stosb
+   108 00000100 E2F6                                loop repeat4
+   109                                          next4:
+   110 00000102 BE[BC000000]                    mov ESI,cuv5 ;offset of source string
+   111 00000107 BF[BC000000]                    mov EDI,cuv5 ;offset of destination string
+   112 0000010C B90A000000                      mov ECX,10
+   113                                          repeat5:
+   114 00000111 AC                                  lodsb
+   115 00000112 3C00                                cmp AL,0
+   116 00000114 2C02                                sub AL,2
+   117 00000116 7403                                je next5
+   118 00000118 AA                                  stosb
+   119 00000119 E2F6                                loop repeat5
+   120                                          next5:
+   121 0000011B 68[1C000000]                    push dword cuv1
+   122 00000120 68[14000000]                    push dword readformat
+   123 00000125 FF15[00000000]                  call [printf]
+   124 0000012B 83C408                          add esp, 4*2
+   125 0000012E 68[44000000]                    push dword cuv2
+   126 00000133 68[14000000]                    push dword readformat
+   127 00000138 FF15[00000000]                  call [printf]
+   128 0000013E 83C408                          add esp, 4*2
+   129 00000141 68[6C000000]                    push dword cuv3
+   130 00000146 68[14000000]                    push dword readformat
+   131 0000014B FF15[00000000]                  call [printf]
+   132 00000151 83C408                          add esp, 4*2
+   133 00000154 68[94000000]                    push dword cuv4
+   134 00000159 68[14000000]                    push dword readformat
+   135 0000015E FF15[00000000]                  call [printf]
+   136 00000164 83C408                          add esp, 4*2
+   137 00000167 68[BC000000]                    push dword cuv5
+   138 0000016C 68[14000000]                    push dword readformat
+   139 00000171 FF15[00000000]                  call [printf]
+   140 00000177 83C408                          add esp, 4*2
+   141                                          
+   142                                      final:
+   143                                      ;here we close the file
+   144 0000017A FF35[E4000000]                  push dword[handle1]
+   145 00000180 FF15[00000000]                  call [fclose]
+   146 00000186 83C404                          add esp, 4*1
+   147                                      
+   148                                      finish:    
+   149                                          ; exit(0)
+   150 00000189 6A00                            push    dword 0      ; push the parameter for exit onto the stack
+   151 0000018B FF15[00000000]                  call    [exit]       ; call exit to terminate the program

@@ -1,0 +1,77 @@
+     1                                  bits 32 ; assembling for the 32 bits architecture
+     2                                  
+     3                                  ; declare the EntryPoint (a label defining the very first instruction of the program)
+     4                                  global start        
+     5                                  
+     6                                  ; declare external functions needed by our program
+     7                                  extern exit               ; tell nasm that exit exists even if we won't be defining it
+     8                                  import exit msvcrt.dll    ; exit is a function that ends the calling process. It is defined in msvcrt.dll
+     9                                                            ; msvcrt.dll contains exit, printf and all the other important C-runtime specific functions
+    10                                  
+    11                                  ; our data is declared here (the variables needed by our program)
+    12                                  segment data use32 class=data
+    13 00000000 01                          a db 1
+    14 00000001 01                          b db 1
+    15 00000002 0000                        c dw 0
+    16 00000004 01000000                    e dd 1
+    17 00000008 01000000                    x dd 1
+    18 0000000C 00000000                    var dd 0
+    19                                  
+    20                                  ; our code starts here
+    21                                  segment code use32 class=code
+    22                                  ;(a-b+c*128)/(a+b)+e-x signed
+    23                                      start:
+    24 00000000 A0[00000000]                    mov AL, [a]; Al:=a
+    25 00000005 2A05[01000000]                  sub Al, [b]; AL:=a-b
+    26                                          ;convertim byte la word
+    27 0000000B 6698                            CBW; AX:=a-b
+    28 0000000D 6699                            CWD; DX:AX=a-b
+    29 0000000F 6689C3                          mov BX, AX
+    30 00000012 6689D1                          mov CX, DX
+    31                                          ;CX:BX:=DX:AX=a-b
+    32 00000015 6651                            push CX
+    33 00000017 6653                            push BX
+    34 00000019 5B                              pop EBX
+    35                                          ;EBX:=CX:BX=a-b
+    36 0000001A 891D[0C000000]                  mov dword[var],EBX
+    37                                          ;var=EBX=a-b
+    38 00000020 66A1[02000000]                  mov AX, [c]; AX:=c
+    39 00000026 66B98000                        mov CX, 128; CX:=128 
+    40                                          ;punem in word pentru ca valoarea maxima (signed) care incape intr-un byte e 127
+    41 0000002A 66F7E9                          imul CX; DX:AX:=AX*CX=c*128
+    42 0000002D 668B0D[0E000000]                mov CX,[var+2]
+    43 00000034 668B1D[0C000000]                mov BX,[var]
+    44                                          ;CX:BX=var=a-b
+    45 0000003B 6601C3                          add BX,AX
+    46 0000003E 6611D1                          adc CX,DX
+    47                                          ;CX:BX:=CX:BX+DX:AX=a-b+c*128
+    48 00000041 6651                            push CX
+    49 00000043 6653                            push BX
+    50 00000045 5B                              pop EBX; EBX=a-b+c*128
+    51 00000046 891D[0C000000]                  mov dword[var], EBX; var=a-b+c*128
+    52 0000004C A0[00000000]                    mov AL, [a]; AL:=a
+    53 00000051 0205[01000000]                  add AL, [b]; AL:=a+b
+    54                                          ;convertim byte la word
+    55 00000057 6698                            CBW; AL->AX:=a+b
+    56 00000059 6689C1                          mov CX, AX; CX:=AX=a+b
+    57                                          
+    58 0000005C 668B15[0E000000]                mov DX, [var+2]
+    59 00000063 66A1[0C000000]                  mov AX, [var]
+    60                                          ;DX:AX:=var=a-b+c*128
+    61 00000069 66F7F9                          idiv CX; AX:=DX:AX/CX=(a-b+c*128)/(a+b)
+    62                                                 ; DX:=DX:AX%CX
+    63                                          ;convertim word la double word
+    64 0000006C 6699                            CWD; AX->DX:AX:=(a-b+c*128)/(a+b)
+    65 0000006E 660305[04000000]                add AX, [e]
+    66 00000075 661315[06000000]                adc DX, [e+2]
+    67                                          ;DX:AX:=(a-b+c*128)/(a+b)+e
+    68 0000007C 6652                            push DX
+    69 0000007E 6650                            push AX
+    70 00000080 58                              pop EAX ; EAX:=(a-b+c*128)/(a+b)+e
+    71 00000081 99                              CDQ; EAX->EDX:EAX=(a-b+c*128)/(a+b)+e
+    72 00000082 2B05[08000000]                  sub EAX,[x]
+    73 00000088 1B15[0C000000]                  sbb EDX,[x+4]
+    74                                          ;EDX:EAX=(a-b+c*128)/(a+b)+e-x
+    75                                          ; exit(0)
+    76 0000008E 6A00                            push    dword 0      ; push the parameter for exit onto the stack
+    77 00000090 FF15[00000000]                  call    [exit]       ; call exit to terminate the program

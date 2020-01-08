@@ -1,0 +1,47 @@
+     1                                  bits 32 ; assembling for the 32 bits architecture
+     2                                  
+     3                                  ; declare the EntryPoint (a label defining the very first instruction of the program)
+     4                                  global start        
+     5                                  
+     6                                  ; declare external functions needed by our program
+     7                                  extern exit,printf,scanf   
+     8                                  import exit msvcrt.dll   
+     9                                  import printf msvcrt.dll
+    10                                  import scanf msvcrt.dll
+    11                                  
+    12                                  ; our data is declared here (the variables needed by our program)
+    13                                  segment data use32 class=data
+    14 00000000 00000000                    n dd 0
+    15 00000004 00000000                    result dd 0
+    16 00000008 0A00                        zece dw 10
+    17 0000000A 6E3D00                      message db "n=",0
+    18 0000000D 257800                      format db "%x",0
+    19 00000010 4E756D6172756C2069-         format2 db "Numarul in baza 10 este %d.",0
+    19 00000019 6E2062617A61203130-
+    19 00000022 20657374652025642E-
+    19 0000002B 00                 
+    20                                  
+    21                                  ; our code starts here
+    22                                  segment code use32 class=code
+    23                                      start:
+    24                                          ; Sa se citeasca de la tastatura un numar in baza 16 si sa se afiseze valoarea acelui numar in baza 10.
+    25                                          ;Exemplu: Se citeste: 1D; se afiseaza: 29
+    26                                          ;citim numarul in hexadecimal, folosind %x
+    27 00000000 68[0A000000]                    push dword message
+    28 00000005 FF15[00000000]                  call[printf]
+    29 0000000B 83C404                          add esp,4*1
+    30                                          
+    31 0000000E 68[00000000]                    push dword n 
+    32 00000013 68[0D000000]                    push dword format
+    33 00000018 FF15[00000000]                  call[scanf]
+    34 0000001E 83C408                          add esp,4*2
+    35                                          
+    36                                          ;afisam numarul in decimal, folosind %d  
+    37 00000021 FF35[00000000]                  push dword [n] 
+    38 00000027 68[10000000]                    push dword format2
+    39 0000002C FF15[00000000]                  call[printf]
+    40 00000032 83C408                          add esp, 4*2
+    41                                          
+    42                                          ; exit(0)
+    43 00000035 6A00                            push    dword 0      ; push the parameter for exit onto the stack
+    44 00000037 FF15[00000000]                  call    [exit]       ; call exit to terminate the program

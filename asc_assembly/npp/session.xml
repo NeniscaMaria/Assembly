@@ -1,0 +1,11 @@
+<NotepadPlus>
+    <Session activeView="0">
+        <mainView activeIndex="1">
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1638" startPos="3865" endPos="0" selMode="0" lang="Assembly" encoding="-1" filename="D:\Desktop\Facultate\asc\practicalExam_nmie2578.asm" backupFilePath="" originalFileLastModifTimestamp="1547477187" mapFirstVisibleDisplayLine="-1" mapFirstVisibleDocLine="-1" mapLastVisibleDocLine="-1" mapNbLine="-1" mapHigherPos="-1" mapWidth="-1" mapHeight="-1" mapKByteInDoc="7864439" mapWrapIndentMode="-1" mapIsWrap="no" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1638" startPos="0" endPos="0" selMode="0" lang="Normal Text" encoding="65001" filename="D:\Desktop\Facultate\asc\output.txt" backupFilePath="" originalFileLastModifTimestamp="1547477828" mapFirstVisibleDisplayLine="-1" mapFirstVisibleDocLine="-1" mapLastVisibleDocLine="-1" mapNbLine="-1" mapHigherPos="-1" mapWidth="-1" mapHeight="-1" mapKByteInDoc="16777217" mapWrapIndentMode="-1" mapIsWrap="no" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1638" startPos="38" endPos="38" selMode="0" lang="Normal Text" encoding="-1" filename="D:\Desktop\Facultate\asc\input.txt" backupFilePath="" originalFileLastModifTimestamp="1547475449" mapFirstVisibleDisplayLine="-1" mapFirstVisibleDocLine="-1" mapLastVisibleDocLine="-1" mapNbLine="-1" mapHigherPos="-1" mapWidth="-1" mapHeight="-1" mapKByteInDoc="0" mapWrapIndentMode="-1" mapIsWrap="no" />
+            <File firstVisibleLine="84" xOffset="0" scrollWidth="1638" startPos="2946" endPos="2946" selMode="0" lang="Assembly" encoding="-1" filename="D:\Desktop\Facultate\asc\new 1.asm" backupFilePath="" originalFileLastModifTimestamp="1547477732" mapFirstVisibleDisplayLine="-1" mapFirstVisibleDocLine="-1" mapLastVisibleDocLine="-1" mapNbLine="-1" mapHigherPos="-1" mapWidth="-1" mapHeight="-1" mapKByteInDoc="16777217" mapWrapIndentMode="-1" mapIsWrap="no" />
+        </mainView>
+        <subView activeIndex="0" />
+    </Session>
+</NotepadPlus>
